@@ -35,11 +35,13 @@ Graph GRAPHinit( int V) {
     return G;
 }
 
-void GRAPHinsertArc( Graph G, vertex v, vertex w) {
+void GRAPHinsertArc(Graph G, vertex v, vertex w) {
     for (link a = G->adj[v]; a != NULL; a = a->next)
-        if (a->w == w) return;
-        G->adj[v] = NEWnode( w, G->adj[v]);
-        G->A++;
+        if (a->w == w) return;  
+        
+    G->adj[v] = NEWnode(w, G->adj[v]);
+    G->adj[w] = NEWnode(v, G->adj[w]);
+    G->A++;
 }
 
 void GRAPHshow(Graph G) {
@@ -71,23 +73,42 @@ void GRAPHdestroy(Graph G) {
 static int cnt;
 int pre[1000];
 
-void GRAPHdfs( Graph G)
-{
-cnt = 0;
-for (vertex v = 0; v < G->V; ++v)
-pre[v] = -1;
-for (vertex v = 0; v < G->V; ++v)
-if (pre[v] == -1)
-dfsR( G, v); // comienza nueva etapa
+void GRAPHdfs( Graph G){ //llamada general
+    cnt = 0;
+    for (vertex v = 0; v < G->V; ++v)
+        pre[v] = -1;
+    for (vertex v = 0; v < G->V; ++v)
+        if (pre[v] == -1)
+            dfsR( G, v); // comienza nueva etapa
 
 }
 
-static void dfsR( Graph G, vertex v)
-{
-pre[v] = cnt++;
-for (link a = G->adj[v]; a != NULL; a = a->next) {
-vertex w = a->w;
-if (pre[w] == -1)
-dfsR( G, w);
+static void dfsR( Graph G, vertex v){ //proper recursive
+    pre[v] = cnt++;
+    for (link a = G->adj[v]; a != NULL; a = a->next) {
+        vertex w = a->w;
+        if (pre[w] == -1)
+            dfsR( G, w);
+    }
 }
+
+int main(void) {
+    Graph G = GRAPHinit(5); 
+
+    GRAPHinsertArc(G, 0, 1);
+    GRAPHinsertArc(G, 0, 3);
+    GRAPHinsertArc(G, 1, 4);
+    GRAPHinsertArc(G, 2, 3);
+    GRAPHinsertArc(G, 3, 4);
+    GRAPHinsertArc(G, 4, 0);
+
+    GRAPHremoveArc(G, 3, 4);
+
+    GRAPHshow(G);
+
+    printf("\nLiberando memoria del grafo...\n");
+    GRAPHdestroy(G);
+    printf("Memoria liberada correctamente.\n");
+
+    return 0;
 }
