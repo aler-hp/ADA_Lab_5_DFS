@@ -73,6 +73,15 @@ void GRAPHdestroy(Graph G) {
 static int cnt;
 int pre[1000];
 
+static void dfsR( Graph G, vertex v){ //proper recursive
+    pre[v] = cnt++;
+    for (link a = G->adj[v]; a != NULL; a = a->next) {
+        vertex w = a->w;
+        if (pre[w] == -1)
+            dfsR( G, w);
+    }
+}
+
 void GRAPHdfs( Graph G){ //llamada general
     cnt = 0;
     for (vertex v = 0; v < G->V; ++v)
@@ -81,15 +90,6 @@ void GRAPHdfs( Graph G){ //llamada general
         if (pre[v] == -1)
             dfsR( G, v); // comienza nueva etapa
 
-}
-
-static void dfsR( Graph G, vertex v){ //proper recursive
-    pre[v] = cnt++;
-    for (link a = G->adj[v]; a != NULL; a = a->next) {
-        vertex w = a->w;
-        if (pre[w] == -1)
-            dfsR( G, w);
-    }
 }
 
 int main(void) {
@@ -101,8 +101,6 @@ int main(void) {
     GRAPHinsertArc(G, 2, 3);
     GRAPHinsertArc(G, 3, 4);
     GRAPHinsertArc(G, 4, 0);
-
-    GRAPHremoveArc(G, 3, 4);
 
     GRAPHshow(G);
 
