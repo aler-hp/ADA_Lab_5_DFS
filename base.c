@@ -73,12 +73,23 @@ void GRAPHdestroy(Graph G) {
 static int cnt;
 int pre[1000];
 
-static void dfsR( Graph G, vertex v){ //proper recursive
-    pre[v] = cnt++;
-    for (link a = G->adj[v]; a != NULL; a = a->next) {
-        vertex w = a->w;
-        if (pre[w] == -1)
-            dfsR( G, w);
+void dfsiter(Graph G, vertex s) { //variante de dfsR
+    STACKinit(G->V);
+    STACKpush(s);
+
+    while (!STACKempty()) {
+        vertex v = STACKpop();
+
+        if (pre[v] == -1) {     
+            pre[v] = cnt++;
+
+            link a;
+            for (a = G->adj[v]; a != NULL; a = a->next) { //invertido
+                vertex w = a->w;
+                if (pre[w] == -1)
+                    STACKpush(w);
+            }
+        }
     }
 }
 
@@ -88,7 +99,7 @@ void GRAPHdfs( Graph G){ //llamada general
         pre[v] = -1;
     for (vertex v = 0; v < G->V; ++v)
         if (pre[v] == -1)
-            dfsR( G, v); // comienza nueva etapa
+            dfsiter( G, v); // comienza nueva etapa
 
 }
 
